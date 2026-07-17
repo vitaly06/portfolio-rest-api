@@ -1,0 +1,41 @@
+package config
+
+import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+)
+
+type Config struct {
+	Port       string
+	OpenAIEkey string
+	SMTPHost   string
+	SMTPPort   string
+	SMTPUser   string
+	SMTPPass   string
+	OwnerEmail string
+}
+
+func LoadConfig() *Config {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Ошибка: .env файл не найден")
+	}
+
+	return &Config{
+		Port:       getEnv("PORT", "8080"),
+		OpenAIEkey: getEnv("OPENAI_API_KEY", ""),
+		SMTPHost:   getEnv("SMTP_HOST", ""),
+		SMTPPort:   getEnv("SMTP_PORT", "587"),
+		SMTPUser:   getEnv("SMTP_USER", ""),
+		SMTPPass:   getEnv("SMTP_PASSWORD", ""),
+		OwnerEmail: getEnv("OWNER_EMAIL", ""),
+	}
+}
+
+func getEnv(key, fallback string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return fallback
+}

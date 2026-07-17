@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -19,7 +19,7 @@ type Config struct {
 
 func LoadConfig() *Config {
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Ошибка: .env файл не найден")
+		fmt.Println("[CONFIG INFO] Локальный файл .env не найден, читаем переменные из окружения ОС")
 	}
 
 	return &Config{

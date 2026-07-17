@@ -1,0 +1,135 @@
+definitions:
+  domain.ContactRequest:
+    properties:
+      comment:
+        minLength: 5
+        type: string
+      email:
+        type: string
+      name:
+        minLength: 2
+        type: string
+      phone:
+        type: string
+    required:
+    - comment
+    - email
+    - name
+    - phone
+    type: object
+  domain.ContactResponse:
+    properties:
+      ai_reply:
+        example: Здравствуйте! Спасибо за ваше обращение...
+        type: string
+      sentiment:
+        example: positive
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  domain.ErrorResponse:
+    properties:
+      error:
+        example: Описание ошибки бэкенда
+        type: string
+    type: object
+  domain.HealthResponse:
+    properties:
+      status:
+        example: OK
+        type: string
+    type: object
+  domain.Metrics:
+    properties:
+      last_update:
+        example: "2026-07-17T13:40:00Z"
+        type: string
+      sentiment_stats:
+        $ref: '#/definitions/domain.SentimentStats'
+      total_requests:
+        example: 12
+        type: integer
+    type: object
+  domain.SentimentStats:
+    properties:
+      negative:
+        example: 1
+        type: integer
+      neutral:
+        example: 3
+        type: integer
+      positive:
+        example: 8
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /api/contact:
+    post:
+      consumes:
+      - application/json
+      description: Принимает данные формы, анализирует тональность через AI, шлет
+        email и возвращает автоответ
+      parameters:
+      - description: Данные контакта
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ContactRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ с AI-автоответом
+          schema:
+            $ref: '#/definitions/domain.ContactResponse'
+        "400":
+          description: Ошибка валидации или неверный JSON
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "429":
+          description: Too many requests (спам-защита)
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Отправка формы обратной связи
+      tags:
+      - contact
+  /api/health:
+    get:
+      description: Возвращает текущий статус сервера (health check)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Статус OK
+          schema:
+            $ref: '#/definitions/domain.HealthResponse'
+      summary: Проверка статуса сервиса
+      tags:
+      - system
+  /api/metrics:
+    get:
+      description: Возвращает общие метрики и тональность обращений из файла
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Объект статистики
+          schema:
+            $ref: '#/definitions/domain.Metrics'
+        "500":
+          description: Не удалось прочитать метрики
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Статистика обращений
+      tags:
+      - system
+swagger: "2.0"

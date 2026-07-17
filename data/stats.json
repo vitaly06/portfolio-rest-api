@@ -1,0 +1,9 @@
+{
+  "total_requests": 32,
+  "sentiment_stats": {
+    "positive": 0,
+    "neutral": 32,
+    "negative": 0
+  },
+  "last_update": "2026-07-17T21:09:58.171092202+05:00"
+}

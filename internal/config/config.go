@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	Port       string
-	OpenAIEkey string
+	YandexKey  string
 	SMTPHost   string
 	SMTPPort   string
 	SMTPUser   string
@@ -24,7 +24,7 @@ func LoadConfig() *Config {
 
 	return &Config{
 		Port:       getEnv("PORT", "8080"),
-		OpenAIEkey: getEnv("OPENAI_API_KEY", ""),
+		YandexKey:  getEnv("YANDEX_API_KEY", ""),
 		SMTPHost:   getEnv("SMTP_HOST", ""),
 		SMTPPort:   getEnv("SMTP_PORT", "587"),
 		SMTPUser:   getEnv("SMTP_USER", ""),

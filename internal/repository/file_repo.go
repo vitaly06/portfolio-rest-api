@@ -45,17 +45,25 @@ func (r *FileRepository) UpdateMetrics(sentiment string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	metrics := domain.Metrics{
-		SentimentStats: make(map[string]int),
-	}
+	var metrics domain.Metrics
 
-	// Читаем старые метрики
+	// Читаем старые метрики, если файл существует
 	if data, err := os.ReadFile(r.metricsFile); err == nil {
 		_ = json.Unmarshal(data, &metrics)
 	}
 
 	metrics.TotalRequests++
-	metrics.SentimentStats[sentiment]++
+
+	// Инкрементируем нужное поле в зависимости от тональности
+	switch sentiment {
+	case "positive":
+		metrics.SentimentStats.Positive++
+	case "negative":
+		metrics.SentimentStats.Negative++
+	default:
+		metrics.SentimentStats.Neutral++
+	}
+
 	metrics.LastUpdate = time.Now()
 
 	updatedData, err := json.MarshalIndent(metrics, "", "  ")
@@ -65,14 +73,12 @@ func (r *FileRepository) UpdateMetrics(sentiment string) error {
 
 	return os.WriteFile(r.metricsFile, updatedData, 0644)
 }
-
 func (r *FileRepository) GetMetrics() (domain.Metrics, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	metrics := domain.Metrics{
-		SentimentStats: make(map[string]int),
-	}
+	// Инициализируем пустую структуру (поля интов автоматически будут равны 0)
+	var metrics domain.Metrics
 
 	data, err := os.ReadFile(r.metricsFile)
 	if err != nil {

@@ -6,9 +6,11 @@ import (
 
 	"time"
 
+	"github.com/gofiber/contrib/v3/swaggo"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3/middleware/limiter"
+	_ "github.com/vitaly06/portfolio-rest-api/docs"
 	"github.com/vitaly06/portfolio-rest-api/internal/config"
 	"github.com/vitaly06/portfolio-rest-api/internal/deliviry/http"
 	"github.com/vitaly06/portfolio-rest-api/internal/repository"
@@ -54,6 +56,7 @@ func main() {
 	app.Post("/api/contact", handler.HandleContact)
 	app.Get("/api/health", handler.HandleHealth)
 	app.Get("/api/metrics", handler.HandleMetrics)
+	app.Get("/swagger/*", swaggo.New())
 
 	log.Printf("Сервер успешно запущен на порту %s", cfg.Port)
 	if err := app.Listen(":" + cfg.Port); err != nil {
